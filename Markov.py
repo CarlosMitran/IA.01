@@ -58,8 +58,8 @@ def bellman(probabilies_on, probabilities_off, cost_on, cost_off):
                 #print(counter_row, counter_column, probabilies_on[counter_row][counter_column], value)
                 on += probabilies_on[counter_row][counter_column] * value
                 off += probabilities_off[counter_row][counter_column] * value
-                on = round(on, 2)
-                off = round(off, 2)
+                on = round(on, 4)
+                off = round(off, 4)
                 #if key == "V(16.0)":
                 #   print(probabilies_on[counter_row][counter_column], on)
 
@@ -80,6 +80,7 @@ def bellman(probabilies_on, probabilities_off, cost_on, cost_off):
 
     print("\n----------------------OPTIMAL POLICY------------------------------")
     print(optimal_policy)
+    return optimal_policy
 
 
 
@@ -91,6 +92,16 @@ for i in range(1, 10):
         print("------------------------------------------------------------------")
         print("Cost on: ", i,  "\nCost off: ", j)
         bellman(prob_on, prob_off, i, j)
+
+with open('Output.csv', 'w') as file:
+    for i in range(1, 10):
+        for j in range(1, 10):
+            result = bellman(prob_on, prob_off, i, j)
+            row = [str(i), str(j)]
+            for key, value in result.items():
+                row.append(str(value))
+            file.write(','.join(row) + '\n')
+
 
 
 
