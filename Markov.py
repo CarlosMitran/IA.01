@@ -1,38 +1,38 @@
 
 def obtain_probabilites():
+    """Creating a matrix for all of the probabilities when the action is ON"""
     on_file = open("T_On.csv")
     lines = on_file.readlines()
-    probabilities_on = []
-    for line in lines:
-        probabilities_on.append(line.split(","))
-    for i in range(len(probabilities_on)):
-        for j in range(len(probabilities_on[i])):
-            probabilities_on[i][j] = float(probabilities_on[i][j])
-        #print(probabilities_on[i])
+    probabilities_on = append_probabilities(lines)
 
     #print("\n\n")
-
+    """Creating a matrix for all of the probabilities when the action is OFF"""
     off_file = open("T_Off.csv")
     lines = off_file.readlines()
-    probabilities_off = []
-
-    for line in lines:
-        probabilities_off.append(line.split(","))
-
-    for i in range(len(probabilities_off)):
-        for j in range(len(probabilities_off[i])):
-            probabilities_off[i][j] = float(probabilities_off[i][j])
-        #print(probabilities_off[i])
+    probabilities_off = append_probabilities(lines)
 
     return probabilities_on, probabilities_off
 
 
-def bellman(probabilies_on, probabilities_off, cost_on, cost_off):
+def append_probabilities(lines):
+    """Appending the probabilities from the file into a matrix"""
+    probabilities = []
+    for line in lines:
+        probabilities.append(line.split(","))
+    for i in range(len(probabilities)):
+        for j in range(len(probabilities[i])):
+            probabilities[i][j] = float(probabilities[i][j])
+        # print(probabilities_on[i])
+    return probabilities
+
+
+def bellman(probabilities_on, probabilities_off, cost_on, cost_off):
+    """Bellman equation, firstly we initialize our values"""
     values = {}
     prev_values = {}
     optimal_policy = {}
     init = 16.0
-    for i in range(len(probabilies_on[0])):
+    for i in range(len(probabilities_on[0])):
         values["V("+str(init)+")"] = 0
         prev_values["V(" + str(init) + ")"] = 1
         optimal_policy["V(" + str(init) + ")"] = None
@@ -56,7 +56,7 @@ def bellman(probabilies_on, probabilities_off, cost_on, cost_off):
             for value in prev_values.values():
                 #if key == "V(16.0)" or key == "V(17.0)":
                 #print(counter_row, counter_column, probabilies_on[counter_row][counter_column], value)
-                on += probabilies_on[counter_row][counter_column] * value
+                on += probabilities_on[counter_row][counter_column] * value
                 off += probabilities_off[counter_row][counter_column] * value
                 on = round(on, 4)
                 off = round(off, 4)
@@ -78,29 +78,38 @@ def bellman(probabilies_on, probabilities_off, cost_on, cost_off):
         #print(values)
         #print("----------------------------------------------------")
 
-    print("\n----------------------OPTIMAL POLICY------------------------------")
-    print(optimal_policy)
     return optimal_policy
 
 
-
-
-
-prob_on, prob_off = obtain_probabilites()
-for i in range(1, 10):
-    for j in range(1, 10):
-        print("------------------------------------------------------------------")
-        print("Cost on: ", i,  "\nCost off: ", j)
-        bellman(prob_on, prob_off, i, j)
-
-with open('Output.csv', 'w') as file:
+def print_values(prob_on, prob_off):
     for i in range(1, 10):
         for j in range(1, 10):
-            result = bellman(prob_on, prob_off, i, j)
-            row = [str(i), str(j)]
-            for key, value in result.items():
-                row.append(str(value))
-            file.write(','.join(row) + '\n')
+            print("------------------------------------------------------------------")
+            print("Cost on: ", i, "\nCost off: ", j)
+            policy = bellman(prob_on, prob_off, i, j)
+            print("\n----------------------OPTIMAL POLICY------------------------------")
+            print(policy)
+
+
+def file_create(prob_on, prob_off):
+    with open('Output.csv', 'w') as file:
+        for i in range(1, 10):
+            for j in range(1, 10):
+                result = bellman(prob_on, prob_off, i, j)
+                row = [str(i), str(j)]
+                for key, value in result.items():
+                    row.append(str(value))
+                file.write(','.join(row) + '\n')
+
+
+def main():
+    prob_on, prob_off = obtain_probabilites()
+    file_create(prob_on, prob_off)
+    print_values(prob_on, prob_off)
+
+
+main()
+
 
 
 
