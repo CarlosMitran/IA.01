@@ -82,6 +82,7 @@ def bellman(probabilities_on, probabilities_off, cost_on, cost_off):
 
 
 def print_values(prob_on, prob_off):
+    """Function for printing the values of costs and the optimal policy on screen"""
     for i in range(1, 10):
         for j in range(1, 10):
             print("------------------------------------------------------------------")
@@ -92,6 +93,7 @@ def print_values(prob_on, prob_off):
 
 
 def file_create(prob_on, prob_off):
+    """Function to create the output.csv file"""
     with open('Output.csv', 'w') as file:
         for i in range(1, 10):
             for j in range(1, 10):
@@ -103,6 +105,7 @@ def file_create(prob_on, prob_off):
 
 
 def main():
+    """Main function"""
     prob_on, prob_off = obtain_probabilites()
     file_create(prob_on, prob_off)
     print_values(prob_on, prob_off)
